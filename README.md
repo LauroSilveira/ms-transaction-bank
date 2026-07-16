@@ -149,3 +149,24 @@ services:
 
 volumes:
   postgres_data:
+```
+
+# Send a request to a new transaction
+
+Notice I am using Postman environment variables and also using this pre-request to create LocalDateTime without UTC cone. 
+`
+const now = new Date().toISOString().slice(0, -1); 
+pm.variables.set("localDateTimeNow", now);
+`
+```curl
+postman request POST 'http://localhost:8080/transfer' \
+  --header 'Content-Type: application/json' \
+  --body '{
+    "transactionId": "35e1f53a-c16f-4c43-aed8-54a2dd3adcff",
+    "description": "Transferencia de Tasha Fay",
+    "amount": "463.59",
+    "transferAt": "{{localDateTimeNow}}",
+    "status": "PENDING",
+    "transactionType": "CREDIT"
+}'
+```
