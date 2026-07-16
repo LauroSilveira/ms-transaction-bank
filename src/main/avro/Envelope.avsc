@@ -1,0 +1,69 @@
+{
+  "type": "record",
+  "name": "Envelope",
+  "namespace": "transaction_db.transactions.bank_transaction",
+  "fields": [
+    {
+      "name": "before",
+      "type": ["null", {
+        "type": "record",
+        "name": "Value",
+        "fields": [
+          { "name": "id", "type": "long" },
+          { "name": "transaction_id", "type": { "type": "string", "connect.version": 1, "connect.name": "io.debezium.data.Uuid" } },
+          { "name": "description", "type": ["null", "string"], "default": null },
+          { "name": "amount", "type": { "type": "bytes", "scale": 2, "precision": 19, "connect.version": 1, "connect.parameters": { "scale": "2", "connect.decimal.precision": "19" }, "connect.name": "org.apache.kafka.connect.data.Decimal", "logicalType": "decimal" } },
+          { "name": "transfer_at", "type": { "type": "long", "connect.version": 1, "connect.name": "io.debezium.time.MicroTimestamp" } },
+          { "name": "status", "type": "string" },
+          { "name": "transaction_type", "type": ["null", "string"], "default": null }
+        ],
+        "connect.name": "transaction_db.transactions.bank_transaction.Value"
+      }],
+      "default": null
+    },
+    { "name": "after", "type": ["null", "Value"], "default": null },
+    {
+      "name": "source",
+      "type": {
+        "type": "record",
+        "name": "Source",
+        "namespace": "io.debezium.connector.postgresql",
+        "fields": [
+          { "name": "version", "type": "string" },
+          { "name": "connector", "type": "string" },
+          { "name": "name", "type": "string" },
+          { "name": "ts_ms", "type": "long" },
+          { "name": "snapshot", "type": [{ "type": "string", "connect.version": 1, "connect.parameters": { "allowed": "true,last,false,incremental" }, "connect.default": "false", "connect.name": "io.debezium.data.Enum" }, "null"], "default": "false" },
+          { "name": "db", "type": "string" },
+          { "name": "sequence", "type": ["null", "string"], "default": null },
+          { "name": "schema", "type": "string" },
+          { "name": "table", "type": "string" },
+          { "name": "txId", "type": ["null", "long"], "default": null },
+          { "name": "lsn", "type": ["null", "long"], "default": null },
+          { "name": "xmin", "type": ["null", "long"], "default": null }
+        ],
+        "connect.name": "io.debezium.connector.postgresql.Source"
+      }
+    },
+    { "name": "op", "type": "string" },
+    { "name": "ts_ms", "type": ["null", "long"], "default": null },
+    {
+      "name": "transaction",
+      "type": ["null", {
+        "type": "record",
+        "name": "block",
+        "namespace": "event",
+        "fields": [
+          { "name": "id", "type": "string" },
+          { "name": "total_order", "type": "long" },
+          { "name": "data_collection_order", "type": "long" }
+        ],
+        "connect.version": 1,
+        "connect.name": "event.block"
+      }],
+      "default": null
+    }
+  ],
+  "connect.version": 1,
+  "connect.name": "transaction_db.public.transaction.Envelope"
+}

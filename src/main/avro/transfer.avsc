@@ -1,0 +1,55 @@
+{
+  "namespace": "com.lauro.correia.transactionbank.infrastructure.adapters.avro",
+  "type": "record",
+  "name": "TransferRecord",
+  "fields": [
+    {
+      "name": "id",
+      "type": ["null", "long"],
+      "default": null
+    },
+    {
+      "name": "transactionId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "name": "amount",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 19,
+        "scale": 2
+      }
+    },
+    {
+      "name": "transferAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros"
+      }
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "Status",
+        "symbols": ["PENDING", "PROCESSED"]
+      }
+    },
+    {
+      "name": "transactionType",
+      "type": {
+        "type": "enum",
+        "name": "TransactionType",
+        "symbols": ["CREDIT", "DEBIT"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-transaction-bank
+  devtools:
+    remote:
+      restart:
+        enabled: true
+
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        # Necessary to tell where is schema registry
+        schema.registry.url: http://localhost:8085
+    consumer:
+      group-id: transaction-create-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      max-poll-records: 100
+      auto-offset-reset: earliest
+      properties:
+        schema.registry.url: http://localhost:8085
+        specific.avro.reader: true
+    streams:
+      application-id: "kstream-id"
+      bootstrap-servers: "localhost:9092"
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+        schema.registry.url: http://localhost:8085
+
+      #value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      #      properties:
+      #        spring:
+      #          json:
+      #            trusted:
+      #              packages: "com.lauro.correia.transactionbank.infrastructure.adapters.in.*"
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/transaction_db
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:laurocorreia}
+    password: ${DB_PASSWORD:admin}
+
+ms-transaction-bank:
+  kafka:
+    topics:
+      transaction-create: transaction.created
+      transaction-audit: transaction-audit
+    connect:
+      transaction-create: transaction_db.transactions.bank_transaction
