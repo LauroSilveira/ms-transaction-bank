@@ -27,8 +27,8 @@ This project implements a lightweight service for recording, validating and quer
 
 ## Requirements
 
-- JDK 11 or newer
-- Maven or Gradle
+- JDK 25 or newer
+- Maven
 - Docker & Docker Compose (to run Postgres, Kafka, Connect, Debezium, etc.)
 
 ## Local installation and run
