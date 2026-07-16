@@ -170,3 +170,25 @@ postman request POST 'http://localhost:8080/transfer' \
     "transactionType": "CREDIT"
 }'
 ```
+
+# Setup Postgres-connector
+Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector, after paste this configuration:
+name: postgres-connector
+
+Config:
+```json
+{
+  "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+  "database.hostname": "debezium",
+  "database.port": "5432",
+  "database.user": "laurocorreia",
+  "database.password": "admin",
+  "database.dbname": "transaction_db",
+  "topic.prefix": "transaction_db",
+  "plugin.name": "pgoutput",
+  "slot.name": "debezium_slot",
+  "publication.autocreate.mode": "filtered",
+  "schema.include.list": "transactions",
+  "table.include.list": "transactions.bank_transaction"
+}
+```
