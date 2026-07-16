@@ -50,7 +50,9 @@ This project implements a lightweight service for recording, validating and quer
 
 ## Docker / Docker Compose 
 
-This project expects Postgres to run in Docker for local development. The system also integrates with Kafka, Kafka Connect and Debezium for CDC and uses a Kafka UI to inspect topics. Below is a simple example docker-compose snippet to start Postgres plus a Kafka stack — adapt versions and configuration as needed.
+This project expects Postgres to run in Docker for local development.<br />
+The system also integrates with Kafka, Kafka Connect and Debezium for CDC and uses a Kafka UI to inspect topics. <br /> 
+Below is a simple example docker-compose snippet to start Postgres plus a Kafka stack — adapt versions and configuration as needed.
 
 ```yaml
 name: ms-transaction-back
@@ -172,7 +174,7 @@ postman request POST 'http://localhost:8080/transfer' \
 ```
 
 # Setup Postgres-connector
-Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector, after paste this configuration:
+Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector and paste this configuration:
 name: postgres-connector
 
 Config:
