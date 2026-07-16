@@ -32,9 +32,9 @@ public class TransactionConsumerAdapter {
 
     @KafkaListener(
             id = "transaction-consumer-main",
-            //topics = "${ms-transaction-bank.kafka.topics.transaction-create}",
             topics = "${ms-transaction-bank.kafka.connect.transaction-create}",
             groupId = "${spring.kafka.consumer.group-id}")
+
     @RetryableTopic(
             backOff = @BackOff(value = 3000L),
             attempts = "3",
@@ -51,14 +51,6 @@ public class TransactionConsumerAdapter {
         transaction.setStatus(Status.PROCESSED);
         this.transactionRepository.save(transaction);
     }
-
-//    @KafkaListener(
-//            id = "transaction-consumer-secondary",
-//            topics = "${ms-transaction-bank.kafka.topics.transaction-create}",
-//            groupId = "${spring.kafka.consumer.group-id}")
-//    public void auditConsumer(final TransferRecord transferRecord) {
-//        log.info("[TransactionAuditConsumer] auditConsumer Message received: {}", transferRecord);
-//    }
 
     @DltHandler
     public void dltConsumer(final Envelope envelope,

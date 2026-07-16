@@ -135,10 +135,18 @@
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
                             <outputDirectory>${project.basedir}/target/generated-sources/avro/</outputDirectory>
+                            <!-- Use private visibility for Avro class fields instead of public -->
                             <fieldVisibility>PRIVATE</fieldVisibility>
+                            <!-- Convert Avro logicalType uuid into Java UUID instead of String -->
                             <customConversions>org.apache.avro.Conversions$UUIDConversion</customConversions>
+                            <!-- Convert Avro logicalType decimal into Java BigDecimal instead of ByteBuffer -->
                             <enableDecimalLogicalType>true</enableDecimalLogicalType>
+                            <!-- Convert Avro string into Java String instead of CharSequence -->
                             <stringType>String</stringType>
+                            <!-- Allow Book and Order classes to reference type specified in Price.avsc -->
+                            <imports>
+                                <import>src/main/avro/Envelope.avsc</import>
+                            </imports>
                         </configuration>
                     </execution>
                 </executions>
