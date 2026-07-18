@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.env.example
+target/
+*.log
+.idea
+*.iml
+.DS_Store
+docker-compose.yaml
+Dockerfile*

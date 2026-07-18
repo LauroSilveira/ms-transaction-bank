@@ -42,10 +42,10 @@ spring:
       #              packages: "com.lauro.correia.transactionbank.infrastructure.adapters.in.*"
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/transaction_db
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:laurocorreia}
-    password: ${DB_PASSWORD:admin}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
 ms-transaction-bank:
   kafka:

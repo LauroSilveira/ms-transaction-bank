@@ -169,9 +169,9 @@ services:
     image: debezium/postgres:17-alpine
     container_name: debezium
     environment:
-      POSTGRES_DB: transaction_db
-      POSTGRES_USER: laurocorreia
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB:  ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - '5432:5432'
     volumes:
@@ -198,7 +198,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
-      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_LOG_RETENTION_MS: 500000 # 5 minutes
       KAFKA_LOG_RETENTION_BYTES: 104857600 # 100MB retention time, optional
       KAFKA_LOG_SEGMENT_BYTES: 10485760 # 10MB
@@ -261,7 +261,10 @@ volumes:
 ```
 ## Setup Postgres-connector
 Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector and paste this configuration:
+Do not forget to replace user and password database file path to your.
+```
 name: postgres-connector
+```
 
 Config:
 ```json
@@ -269,8 +272,8 @@ Config:
   "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
   "database.hostname": "debezium",
   "database.port": "5432",
-  "database.user": "laurocorreia",
-  "database.password": "admin",
+  "database.user": "${file:/secrets/debezium.properties:database.user}",
+  "database.password": "${file:/secrets/debezium.properties:database.password}",
   "database.dbname": "transaction_db",
   "topic.prefix": "transaction_db",
   "plugin.name": "pgoutput",
