@@ -6,6 +6,113 @@ Java microservice for managing bank transactions (transfers, payments and transa
 
 This project implements a lightweight service for recording, validating and querying financial transactions between accounts. It is designed to be simple, testable, and ready for integration in a microservices architecture.
 
+## Architecture
+This project follows the Hexagonal Architecture (Ports & Adapters) principles, isolating business rules (domain) from infrastructure details such as REST, Kafka, and the database.
+
+```mermaid
+flowchart TB
+    subgraph IN["🔵 Adapters IN"]
+        REST["REST Controller<br/>TransferController"]
+        KAFKA_IN["Kafka Consumers<br/>audit / serdes / transaction"]
+    end
+
+    subgraph APP["🟡 Application"]
+        UC["TransferUseCase"]
+    end
+
+    subgraph DOMAIN["🟢 Domain (core)"]
+        INPORT["Input Port<br/>TransferUseCasePort"]
+        MODEL["Model<br/>Transfer, TransactionKey,<br/>Status, TransactionType,<br/>ForbiddenWords"]
+        EXC["Exceptions<br/>DomainException,<br/>TransactionFormatMessageException"]
+        OUTPORT["Output Ports<br/>TransactionRepositoryPort,<br/>TransactionEventPublishPort,<br/>AuditEventPublishPort"]
+    end
+
+    subgraph OUT["🔴 Adapters OUT"]
+        KAFKA_OUT["Kafka Publishers<br/>TransactionPublishAdapter,<br/>AuditTransactionPublishAdapter"]
+        REPO["Repositories<br/>transaction / audit"]
+    end
+
+    subgraph INFRA["⚙️ Infrastructure"]
+        DB[("PostgreSQL /<br/>Flyway migrations")]
+        KFK[("Kafka<br/>Broker + Connect")]
+    end
+
+    REST --> INPORT
+    KAFKA_IN --> INPORT
+    INPORT --> UC
+    UC --> MODEL
+    UC --> EXC
+    UC --> OUTPORT
+    OUTPORT --> KAFKA_OUT
+    OUTPORT --> REPO
+    KAFKA_OUT --> KFK
+    REPO --> DB
+
+    style DOMAIN fill:#1a3a1a,stroke:#4ade80,stroke-width:2px
+    style APP fill:#3a3a1a,stroke:#facc15,stroke-width:2px
+    style IN fill:#1a2a3a,stroke:#60a5fa,stroke-width:2px
+    style OUT fill:#3a1a1a,stroke:#f87171,stroke-width:2px
+    style INFRA fill:#2a2a2a,stroke:#9ca3af,stroke-width:2px
+```
+The flow follows the dependency rule of hexagonal architecture: adapters (in/out) depend on the domain, never the other way around. The domain has no knowledge of Kafka, REST, or the database — only its own ports (interfaces).
+
+## Directory Structure
+```
+src/main/
+├── avro/                                 # Avro schemas used for Kafka event serialization
+├── java/com.lauro.correia.transactionbank/
+│   │
+│   ├── application/                      # Application use cases (orchestration)
+│   │   └── TransferUseCase                   → Implements the orchestration logic for a transfer
+│   │
+│   ├── domain/                           # Core business logic — no dependency on external technologies
+│   │   ├── input.port/                       # Input ports (contracts exposed by the application)
+│   │   │   └── TransferUseCasePort                → Interface for the transfer use case
+│   │   │
+│   │   ├── model/                             # Entities, value objects, and domain exceptions
+│   │   │   ├── exception/
+│   │   │   │   ├── DomainException                    → Base domain exception
+│   │   │   │   └── TransactionFormatMessageException  → Exception for transaction message formatting
+│   │   │   └── transaction/
+│   │   │       ├── ForbiddenWords                     → Enum/list of forbidden words (validation)
+│   │   │       ├── Status                             → Transaction status enum
+│   │   │       ├── TransactionKey                     → Transaction key/identifier
+│   │   │       ├── TransactionType                     → Transaction type enum
+│   │   │       └── Transfer                            → Main transfer entity
+│   │   │
+│   │   └── output.port/                       # Output ports (contracts the domain requires from infrastructure)
+│   │       ├── AuditEventPublishPort              → Contract for publishing audit events
+│   │       ├── TransactionEventPublishPort        → Contract for publishing transaction events
+│   │       └── TransactionRepositoryPort          → Contract for transaction persistence
+│   │
+│   ├── infrastructure.adapters/          # Concrete implementations of the ports (technical details)
+│   │   ├── in/                                # Input adapters (what "drives" the domain)
+│   │   │   ├── kafka/
+│   │   │   │   ├── audit/                         → Consumers related to audit events
+│   │   │   │   ├── serdes/                        → Custom serializers/deserializers
+│   │   │   │   └── transaction/                   → Consumers related to transaction events
+│   │   │   └── rest.transfer/
+│   │   │       ├── TransferController             → REST endpoint for requesting transfers
+│   │   │       └── TransferDTO                     → Input/output DTO for the REST API
+│   │   │
+│   │   └── out/                               # Output adapters (implementations of the output ports)
+│   │       ├── kafka/
+│   │       │   ├── AuditTransactionPublishAdapter → Publishes audit events to Kafka
+│   │       │   └── TransactionPublishAdapter      → Publishes transaction events to Kafka
+│   │       └── repository/
+│   │           ├── audit/                         → Audit persistence implementation
+│   │           └── transaction/                   → Transaction persistence implementation
+│   │
+│   └── MsTransactionBankApplication          # Main class (Spring Boot bootstrap)
+│
+└── resources/
+    ├── db/migration/                     # Flyway database versioning scripts
+    │   ├── V1__CREATE_SCHEMA.sql             → Initial schema creation
+    │   ├── V2__CREATE_TABLE_TRANSACTION.sql  → Transaction table creation
+    │   └── V3__CREATE_TABLE_AUDIT.sql        → Audit table creation
+    └── application.yaml                  # Application configuration (Spring, Kafka, DB, etc.)
+```
+
 ## Key features
 
 - Record transactions (send/receive)
@@ -152,27 +259,6 @@ services:
 volumes:
   postgres_data:
 ```
-
-# Send a request to a new transaction
-
-Notice I am using Postman environment variables and also using this pre-request to create LocalDateTime without UTC cone. 
-`
-const now = new Date().toISOString().slice(0, -1); 
-pm.variables.set("localDateTimeNow", now);
-`
-```curl
-postman request POST 'http://localhost:8080/transfer' \
-  --header 'Content-Type: application/json' \
-  --body '{
-    "transactionId": "35e1f53a-c16f-4c43-aed8-54a2dd3adcff",
-    "description": "Transferencia de Tasha Fay",
-    "amount": "463.59",
-    "transferAt": "{{localDateTimeNow}}",
-    "status": "PENDING",
-    "transactionType": "CREDIT"
-}'
-```
-
 # Setup Postgres-connector
 Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector and paste this configuration:
 name: postgres-connector
@@ -193,4 +279,24 @@ Config:
   "schema.include.list": "transactions",
   "table.include.list": "transactions.bank_transaction"
 }
+```
+
+# Let's see in action
+
+Notice I am using Postman environment variables and also using this pre-request to create LocalDateTime without UTC cone. 
+```
+const now = new Date().toISOString().slice(0, -1); 
+pm.variables.set("localDateTimeNow", now);
+```
+```curl
+postman request POST 'http://localhost:8080/transfer' \
+  --header 'Content-Type: application/json' \
+  --body '{
+    "transactionId": "35e1f53a-c16f-4c43-aed8-54a2dd3adcff",
+    "description": "Transferencia de Tasha Fay",
+    "amount": "463.59",
+    "transferAt": "{{localDateTimeNow}}",
+    "status": "PENDING",
+    "transactionType": "CREDIT"
+}'
 ```
