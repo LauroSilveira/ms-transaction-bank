@@ -259,7 +259,7 @@ services:
 volumes:
   postgres_data:
 ```
-# Setup Postgres-connector
+## Setup Postgres-connector
 Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector and paste this configuration:
 name: postgres-connector
 
@@ -281,7 +281,7 @@ Config:
 }
 ```
 
-# Let's see in action
+## Request Example
 
 Notice I am using Postman environment variables and also using this pre-request to create LocalDateTime without UTC cone. 
 ```
