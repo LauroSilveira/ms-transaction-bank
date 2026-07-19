@@ -304,3 +304,19 @@ postman request POST 'http://localhost:8080/transfer' \
     "transactionType": "CREDIT"
 }'
 ```
+
+## Schema registry endpoints
+Returns all schemas
+```curl
+curl --location 'http://localhost:8085/subjects'
+```
+
+Get a specific version of a schema. 
+```curl
+curl --location 'http://localhost:8085/subjects/transaction_db.transactions.bank_transaction-key/versions'
+```
+
+Get latest info about a schema.
+```curl
+curl --location 'http://localhost:8085/subjects/transaction_db.transactions.bank_transaction-value/versions/latest'
+```
