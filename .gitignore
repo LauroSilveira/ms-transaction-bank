@@ -20,6 +20,7 @@ secrets
 *.iml
 *.ipr
 .env
+.DS_Store
 
 ### NetBeans ###
 /nbproject/private/

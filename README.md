@@ -11,6 +11,7 @@ This project follows the Hexagonal Architecture (Ports & Adapters) principles, i
 I implemented Change Data Capture (CDC) using Kafka Connect with the Debezium PostgreSQL Source connector, configured to monitor the database's write-ahead log (WAL) via logical replication (the pgoutput plugin). This way, any change persisted to the table is automatically propagated to a Kafka topic, without the need to implement a manual producer in the application — the application's sole responsibility becomes persisting data correctly to the database, while the asynchronous propagation of events is delegated to the CDC infrastructure.
 
 ```mermaid
+%%{init: {'theme':'dark'}}%%
 flowchart TB
     subgraph IN["🔵 Adapters IN"]
         REST["REST Controller<br/>TransferController"]
