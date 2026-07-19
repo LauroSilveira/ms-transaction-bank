@@ -263,8 +263,9 @@ volumes:
 ## Setup Postgres-connector
 Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector and paste this configuration:
 Do not forget to replace user and password database file path to your.
+Name:
 ```
-name: postgres-connector
+postgres-connector
 ```
 
 Config:
