@@ -7,7 +7,8 @@ Java microservice for managing bank transactions (transfers, payments and transa
 This project implements a lightweight service for recording, validating and querying financial transactions between accounts. It is designed to be simple, testable, and ready for integration in a microservices architecture.
 
 ## Architecture
-This project follows the Hexagonal Architecture (Ports & Adapters) principles, isolating business rules (domain) from infrastructure details such as REST, Kafka, and the database.
+This project follows the Hexagonal Architecture (Ports & Adapters) principles, isolating business rules (domain) from infrastructure details such as REST, Kafka, and the database. <br/>
+I implemented Change Data Capture (CDC) using Kafka Connect with the Debezium PostgreSQL Source connector, configured to monitor the database's write-ahead log (WAL) via logical replication (the pgoutput plugin). This way, any change persisted to the table is automatically propagated to a Kafka topic, without the need to implement a manual producer in the application — the application's sole responsibility becomes persisting data correctly to the database, while the asynchronous propagation of events is delegated to the CDC infrastructure.
 
 ```mermaid
 flowchart TB
