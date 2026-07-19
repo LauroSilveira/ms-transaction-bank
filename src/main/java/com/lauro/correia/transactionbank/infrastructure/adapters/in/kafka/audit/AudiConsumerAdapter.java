@@ -15,7 +15,6 @@ import transaction_db.transactions.bank_transaction.Envelope;
 public class AudiConsumerAdapter {
 
     @KafkaListener(
-            //topics = "${ms-transaction-bank.kafka.topics.transaction-create}",
             topics = "${ms-transaction-bank.kafka.connect.transaction-create}",
             groupId = "${spring.kafka.consumer.group-id}")
     public void audiConsumer(final Envelope transferDTO,

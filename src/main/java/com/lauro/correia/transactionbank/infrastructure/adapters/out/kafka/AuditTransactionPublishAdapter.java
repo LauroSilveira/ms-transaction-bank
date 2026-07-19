@@ -27,7 +27,6 @@ public class AuditTransactionPublishAdapter implements AuditEventPublishPort {
     // and Kafka connect reads it from there.
     @Override
     public void publish(final Transfer transfer) {
-
         var transferRecord = TransferRecord.newBuilder()
                 .setId(transfer.id())
                 .setAmount(transfer.amount())
