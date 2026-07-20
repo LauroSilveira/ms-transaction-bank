@@ -157,8 +157,8 @@ src/main/
 
 4. The API will be available at http://localhost:8080 (adjust as configured)
 
-## Docker / Docker Compose 
-
+## Docker / Docker Compose
+**First execute docker compose.**<br/>
 This project expects Postgres to run in Docker for local development.<br />
 The system also integrates with Kafka, Kafka Connect and Debezium for CDC and uses a Kafka UI to inspect topics. <br /> 
 Below is a simple example docker-compose snippet to start Postgres plus a Kafka stack — adapt versions and configuration as needed.
@@ -263,7 +263,8 @@ volumes:
 ```
 ## Setup Postgres-connector
 Go to Kafbat UI in http://localhost:8081 and click on Kafka Connect -> Create Connector and paste this configuration:
-Do not forget to replace user and password database file path to your.
+Do not forget to replace user and password database file path to your. <br/>
+
 Name:
 ```
 postgres-connector
@@ -285,6 +286,17 @@ Config:
   "schema.include.list": "transactions",
   "table.include.list": "transactions.bank_transaction"
 }
+```
+
+## Build/Run Docker image
+
+If you want to run on docker you will need build the image:
+```shell
+docker build -t ms-transfer-bank .
+```
+Then run it:
+```shell
+docker run -p 8080:8080 ms-transfer-bank
 ```
 
 ## Request Example
