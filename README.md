@@ -124,12 +124,12 @@ src/main/
 
 ## Technologies
 
-- Java 11+ (or a compatible version)
-- Frameworks: Spring Boot (recommended)
+- Java 25+ (or a compatible version)
+- Frameworks: Spring Boot 
 - Database: Postgres (via Docker)
-- Messaging & CDC: Apache Kafka, Kafka Connect, Debezium (Postgres)
+- Messaging & CDC: Apache Kafka, Kafka Connect, Debezium (Postgres), Apache Avro and Schema registry
 - Observability / UI: Kafka UI (for browsing topics)
-- Build: Maven or Gradle
+- Build: Maven 
 - Containerization: Docker / Docker Compose
 
 > Note: adjust `pom.xml` and Docker images/versions to match the actual project configuration.
@@ -140,7 +140,7 @@ src/main/
 - Maven
 - Docker & Docker Compose (to run Postgres, Kafka, Connect, Debezium, etc.)
 
-## Local installation and run
+## Running application
 
 1. Clone the repository:
 
@@ -150,6 +150,8 @@ src/main/
 2. Build the project (Maven):
 
    mvn clean package
+
+> Note: Since the project uses Apache Avro, after compilation all Avro files will be in `target/generated-sources`, make sure to mark them as generated-source.
 
 3. Run:
 
