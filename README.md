@@ -289,8 +289,7 @@ Config:
   "table.include.list": "transactions.bank_transaction"
 }
 ```
-> * Note that the configurations of user and password database is referenced on a file, replace it by your database and password.<br/>
-> Or use put this values in the following file:
+> * Note that the configurations of user and password database are referenced on a file, replace them with your database details password, or put these values in the following file:
 ```properties
 # --- PostgreSQL / Debezium ---
 POSTGRES_DB=transaction_db
